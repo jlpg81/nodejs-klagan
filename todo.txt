@@ -1,0 +1,2 @@
+1) en vez de usar el txt, usar cookies
+2) buscar como renovar el jwt si ya expiro
