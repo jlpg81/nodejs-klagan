@@ -10,6 +10,7 @@ const verifyError = (result, req, res) => {
   }
 };
 
+// Route: /login
 const login = async (req, res) => {
   const apiResult = await apiLogin(req.body.username, req.body.password);
 
@@ -22,47 +23,20 @@ const login = async (req, res) => {
     });
   }
 
-  // if (apiResult.status === 400 || apiResult.status === 401) {
-  //   res.status(apiResult.status).json({
-  //     code: 0,
-  //     message: apiResult.data.message,
-  //   });
-  // }
   verifyError(apiResult, req, res);
 };
 
+// Route: /policies
 const getAllPolicies = async (req, res) => {
   const data = await apiPolicies();
   if (!data.status || data.status === 200) {
     res.send(data);
   }
 
-  // if (data.status === 401 || data.status === 402 || data.status === 403) {
-  //   res.status(data.status).json({
-  //     code: 0,
-  //     message: data.data.message,
-  //   });
-  // }
-
   verifyError(data, req, res);
 };
 
-// const getAllPolicies = async (req, res) => {
-//   let token = jwt.readToken();
-//   console.log('token', token);
-//   console.log('getAllPolicies');
-
-//   res.json([
-//     {
-//       id: 'string',
-//       amountInsured: 'string',
-//       email: 'string',
-//       inceptionDate: 'string',
-//       installmentPayment: true,
-//     },
-//   ]);
-// };
-
+// Route: /policies/:id
 const getPolicyById = async (req, res) => {
   const data = await apiPolicies();
 
@@ -70,46 +44,75 @@ const getPolicyById = async (req, res) => {
 
   if (!data.status || data.status === 200) {
     const result = data.filter((data) => data.id === req.params.id);
-    res.send(result);
+    if (result[0]) {
+      res.send([
+        {
+          id: result[0].id,
+          amountInsured: result[0].amountInsured,
+          email: result[0].email,
+          inceptionDate: result[0].inceptionDate,
+          installmentPayment: result[0].installmentPayment,
+        },
+      ]);
+    } else {
+      res.status(404).json({
+        code: 0,
+        message: 'ID not found',
+      });
+    }
   }
 };
 
-const getClients = (req, res) => {
-  res.json([
-    {
-      id: 'string',
-      name: 'string',
-      email: 'string',
-      role: 'string',
-      policies: [
-        {
-          id: 'string',
-          amountInsured: 'string',
-          inceptionDate: 'string',
-        },
-      ],
-    },
-  ]);
+// Route: /clients
+const getClients = async (req, res) => {
+  const data = await apiClients();
+  if (!data.status || data.status === 200) {
+    res.send(data);
+  }
+
+  verifyError(data, req, res);
 };
 
-const getClientById = (req, res) => {
-  res.json([
-    {
-      id: 'string',
-      name: 'string',
-      email: 'string',
-      role: 'string',
-      policies: [
-        {
-          id: 'string',
-          amountInsured: 'string',
-          inceptionDate: 'string',
-        },
-      ],
-    },
-  ]);
+// Route: /clients/:id
+const getClientById = async (req, res) => {
+  const data = await apiClients();
+
+  verifyError(data, req, res);
+
+  if (!data.status || data.status === 200) {
+    const result = data.filter((data) => data.id === req.params.id);
+
+    if (result[0]) {
+      // if the customer was found, we look for its policies
+      const policiesList = await apiPolicies();
+      const userPolicies = policiesList.filter(
+        (policiesList) => policiesList.clientId === req.params.id
+      );
+      if (userPolicies) {
+        // if the customer has at least 1 policy, we adapt the format to what is required
+        const adaptedPolicies = [];
+        userPolicies.forEach((item) => {
+          adaptedPolicies.push({
+            id: item.id,
+            amountInsured: item.amountInsured,
+            inceptionDate: item.inceptionDate,
+          });
+        });
+        result[0].policies = adaptedPolicies;
+        res.send(result);
+      } else {
+        res.send(result);
+      }
+    } else {
+      res.status(404).json({
+        code: 0,
+        message: 'ID not found',
+      });
+    }
+  }
 };
 
+// Route: /clients/:id/policies
 const getClientPolicyList = (req, res) => {
   res.json([
     {
