@@ -2,15 +2,17 @@
 
 Test for K-Lagan
 
-HOW TO RUN
+## HOW TO RUN
 
-> npm start
-> start calling the routes from postman
-> alternatively, use the client in assessment-swagger/static/index.html.. I added extra routes so that it also works from there
+##### > npm start
+##### > start calling the routes from postman
+##### > alternatively, use the client in assessment-swagger/static/index.html.. I added extra routes so that it also works from there
 
-HOW TO TEST
+## HOW TO TEST
 
-> npm test
+##### > npm test
+
+## More Information
 
 Hi there, fellow developer,
 Here is the middleware I just built for the challenge. 
