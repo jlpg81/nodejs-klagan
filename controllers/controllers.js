@@ -113,16 +113,41 @@ const getClientById = async (req, res) => {
 };
 
 // Route: /clients/:id/policies
-const getClientPolicyList = (req, res) => {
-  res.json([
-    {
-      id: 'string',
-      amountInsured: 'string',
-      email: 'string',
-      inceptionDate: 'string',
-      installmentPayment: true,
-    },
-  ]);
+const getClientPolicyList = async (req, res) => {
+  data = await apiClients();
+
+  verifyError(data, req, res);
+
+  if (!data.status || data.status === 200) {
+    const result = data.filter((data) => data.id === req.params.id);
+
+    if (result[0]) {
+      // if the customer was found, we look for its policies
+      const policiesList = await apiPolicies();
+      const userPolicies = policiesList.filter(
+        (policiesList) => policiesList.clientId === req.params.id
+      );
+      if (userPolicies) {
+        // if the customer has at least 1 policy, we adapt the format to what is required
+        const adaptedPolicies = [];
+        userPolicies.forEach((item) => {
+          adaptedPolicies.push({
+            id: item.id,
+            amountInsured: item.amountInsured,
+            email: item.email,
+            inceptionDate: item.inceptionDate,
+            installmentPayment: item.installmentPayment,
+          });
+        });
+        res.send(adaptedPolicies);
+      }
+    } else {
+      res.status(404).json({
+        code: 0,
+        message: 'ID not found',
+      });
+    }
+  }
 };
 
 module.exports = {
