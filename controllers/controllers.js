@@ -8,12 +8,18 @@ const verifyError = (result, req, res) => {
       message: result.data.message,
     });
   }
+  // added this at the last minute because I used node-fetch for the test
+  if (result.statusCode >= 400) {
+    res.status(result.statusCode).json({
+      code: 0,
+      message: result.message,
+    });
+  }
 };
 
 // Route: /login
 const login = async (req, res) => {
-  const apiResult = await apiLogin(req.body.username, req.body.password);
-
+  const apiResult = await apiLogin(req.body.username, req.body.password).then();
   if (apiResult.token) {
     jwt.writeToken(`${apiResult.type} ${apiResult.token}`);
     res.json({

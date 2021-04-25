@@ -1,21 +1,25 @@
 const axios = require('axios').default;
 const jwt = require('./jwt');
+const fetch = require('node-fetch');
 
 const apiLogin = async (client_id, client_secret) => {
-  const data = await axios({
-    method: 'post',
-    url: 'https://dare-nodejs-assessment.herokuapp.com/api/login',
-    headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    data: {
-      client_id,
-      client_secret,
-    },
-  })
+  const body = {
+    client_id: client_id,
+    client_secret: client_secret,
+  };
+  const data = await fetch(
+    'https://dare-nodejs-assessment.herokuapp.com/api/login',
+    {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }
+  )
     .then((res) => {
-      return res.data;
+      return res.json();
     })
     .catch((error) => {
       if (error.response) {
