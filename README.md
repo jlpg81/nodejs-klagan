@@ -1,6 +1,4 @@
-# nodejs-klagan
-
-Test for K-Lagan
+# Test for K-Lagan
 
 ## HOW TO RUN
 
