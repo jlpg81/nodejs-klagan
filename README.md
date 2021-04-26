@@ -2,6 +2,7 @@
 
 ## HOW TO RUN
 
+##### > npm install
 ##### > npm start
 ##### > start calling the routes from postman
 ##### > alternatively, use the client in assessment-swagger/static/index.html.. I added extra routes so that it also works from there
